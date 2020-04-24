@@ -1,39 +1,45 @@
 #include <iostream>
 #include "Container.h"
+#include "Base.h"
+#include "Shapes.h"
 
 using namespace std;
 
 int main() {
 
-	Container<int> nums = Container<int>(2);
-	nums.add(1);
-	nums.add(3);
-	nums.add(1);
-	nums.add(2);
-	nums.add(111);
-	nums.add(12);
-	nums.add(33);
-	nums.add(12);
-	nums.add(3);
-	nums.add(1);
-	nums.add(2);
-	nums.add(111);
-	nums.add(12);
-	nums.add(33);
+	
+	//Shape shape2 = Point("point", 5, 6);
 
-	Container<int> nums2 = Container<int>(nums);
+
+
+
+	Container<Shape*> shapes = Container<Shape*>(2);
+	shapes.add(new Point("my point", 5, 6));
+	
+	Shape* shape = shapes.get(0);
+
+	cout << shape->print() << " ";
+
+	//shape->~Shape();
+	
+	cout << shape->print() << " ";
+
+	cout << Shape::getCount() << " ";
+
+	shapes.add(new Point("my point", 5, 10));
+
+	cout << Shape::getCount();
+	//Container<int> nums2 = Container<int>(nums);
 
 
 	
 
-	cout << nums2.size() << " ";
-	cout << nums2.capacity() << " ";
+
 
 
 	//nums2.clear();
 
-	cout << " " << nums2.get(0);
-
+	
 
 	int a;
 	cin >> a;
