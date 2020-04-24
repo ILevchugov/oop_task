@@ -6,12 +6,6 @@
 
 using namespace std;
 
-class A {
-	A() {
-
-	}
-};
-
 int main() {
 
 	Container<int> nums = Container<int>(2);
