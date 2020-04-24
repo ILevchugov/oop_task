@@ -4,7 +4,6 @@ template <class T>
 class Container {
 
 public:
-
 	Container();
 	Container(uint32_t capacity);
 	Container(const Container<T> & anotherContainer);
@@ -113,10 +112,3 @@ void Container<T>::resize() {
 	}
 	m_elements = increasedArray;
 }
-
-
-
-
-
-
-
