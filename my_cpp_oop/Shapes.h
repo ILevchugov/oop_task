@@ -1,6 +1,8 @@
 #pragma once
 #define _USE_MATH_DEFINES
 #include <assert.h>
+#include "Container.h"
+#include <iostream>
 #include <math.h>
 #include "Base.h"
 #include "Container.h"
@@ -17,7 +19,7 @@ public:
 		++sm_count;
 	}
 
-	 ~Shape() {
+	virtual ~Shape() {
 		--sm_count;
 	}
 
@@ -112,8 +114,21 @@ public:
 	Rectangle(Point & pointA, Point & pointB):
 		Rectangle("Reactangle", pointA, pointB) {}
 
+	~Rectangle() {
+		delete m_pointA;
+		delete m_pointB;
+	}
+
 	double getArea() {
 		return abs((m_pointA->getX() - m_pointB->getX()) * (m_pointA->getY() - m_pointB->getY()));
+	}
+
+	Point getPointA() {
+		return * m_pointA;
+	}
+
+	Point getPointB() {
+		return * m_pointB;
 	}
 
 	std::string print() override {
@@ -128,4 +143,89 @@ public:
 private:
 	Point * m_pointA;
 	Point * m_pointB;
+};
+
+
+class Square : public Shape, public Named {
+public:
+	Square(std::string name, Rectangle & rectangle) :
+		Named(name),
+		m_squareRect(&rectangle) {
+		if (isSquareExist() == false) {
+			throw "Wrong square";
+		}
+	}
+
+	Square(Rectangle & rectangle) :
+		Square("Square", rectangle) {}
+
+	~Square() {
+		delete m_squareRect;
+	}
+
+	std::string print() override {
+		std::stringstream description;
+		description << Named::print() << "\n"
+			<< m_squareRect->print()<<"\n";
+		return description.str();
+	}
+private:
+	Rectangle * m_squareRect;
+
+	bool isSquareExist() {
+		Point pointA = m_squareRect->getPointA();
+		Point pointB = m_squareRect->getPointB();
+		return (pointA.getX() - pointB.getX() == pointA.getY() - pointB.getY());
+	}
+};
+
+double calcDistance(Point const & pointA, Point const & pointB) {
+	return sqrt((pointA.getX() - pointB.getX()) * (pointA.getX() - pointB.getX()) +
+		(pointA.getY() - pointB.getY()) * (pointA.getY() - pointB.getY()));
+}
+
+class Polyline : public Shape, public Named {
+public:
+	Polyline(std::string name, Container<Point*> const & points) :
+		Named(name),
+		m_points(points) {}
+
+	Polyline(Container<Point*> & points) :
+		Polyline("Polyline", points) {}
+
+	~Polyline() {
+		m_points.clear();
+	}
+
+	void addPoint(Point point) {
+		m_points.add(&point);
+	}
+
+	double calcLength() {
+		double length = 0;
+		for (int i = 0; i < m_points.size() - 1; i++) {
+			length += calcDistance(*m_points.get(i), *m_points.get(i + 1));
+		}
+		return length;
+	}
+
+	std::string print() override {
+		std::stringstream description;
+		description << Named::print() << "\n";
+
+		for (int i = 0; i < m_points.size(); i++) {
+			description << m_points.get(i)->print();
+		}
+
+		description << "Length = " << calcLength() << "\n";
+
+		return description.str();
+	}
+
+private:
+	Container<Point*> m_points ;
+};
+
+class Polygon : public Shape, public Named {
+
 };

@@ -89,8 +89,8 @@ T& Container<T>::get(uint32_t index) {
 template<class T>
 T & Container<T>::pop() {
 	T result = m_elements[--m_size];
-	m_elements[m_size].~T();
-	m_elements[m_size] = NULL;
+	delete m_elements[m_size];
+	//m_elements[m_size] = NULL;
 	return result;
 }
 
