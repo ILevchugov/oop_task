@@ -11,7 +11,9 @@ int main() {
 	//Shape shape2 = Point("point", 5, 6);
 
 
+	Shape* rect = new Rectangle(* new Point(2, 4), * new Point(3, 5));
 
+	Shape* circle = new Circle(1);
 
 	Container<Shape*> shapes = Container<Shape*>(2);
 	shapes.add(new Point("my point", 5, 6));
@@ -22,7 +24,10 @@ int main() {
 
 	//shape->~Shape();
 	
-	cout << shape->print() << " ";
+
+	cout << rect->print() << " ";
+
+	cout << circle->print() << " ";
 
 	cout << Shape::getCount() << " ";
 
