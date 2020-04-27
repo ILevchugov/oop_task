@@ -1,6 +1,6 @@
 #pragma once
 #define _USE_MATH_DEFINES
-#include <assert.h>
+
 #include "Container.h"
 #include <iostream>
 #include <math.h>
@@ -55,7 +55,7 @@ public:
 		return m_y;
 	}
 
-	std::string print() override {
+	std::string print() const override {
 		std::stringstream description;
 		description << Named::print() << "\n"
 			<< "x: " << m_x << " y: " << m_y << "\n";
@@ -85,11 +85,11 @@ public:
 		return m_radius;
 	}
 
-	double getArea() {
+	double getArea() const {
 		return M_PI * m_radius * m_radius;
 	}
 
-	std::string print() override {
+	std::string print() const override {
 		std::stringstream description;
 		description << Named::print() << "\n"
 			<< "Radius: " << m_radius << "\n"
@@ -121,7 +121,7 @@ public:
 		delete m_pointB;
 	}
 
-	double getArea() {
+	double getArea() const {
 		return abs((m_pointA->getX() - m_pointB->getX()) * (m_pointA->getY() - m_pointB->getY()));
 	}
 
@@ -133,7 +133,7 @@ public:
 		return * m_pointB;
 	}
 
-	std::string print() override {
+	std::string print() const override {
 		std::stringstream description;
 		description << Named::print() << "\n"
 			<< "Point A: " << m_pointA->print()
@@ -165,7 +165,7 @@ public:
 		delete m_squareRect;
 	}
 
-	std::string print() override {
+	std::string print() const override {
 		std::stringstream description;
 		description << Named::print() << "\n"
 			<< m_squareRect->print()<<"\n";
@@ -206,18 +206,18 @@ public:
 		m_points.add(point);
 	}
 
-	double calcLength() {
+	double calcLength() const {
 		double length = 0;
-		for (int i = 0; i < m_points.size() - 1; i++) {
+		for (uint32_t i = 0; i < m_points.size() - 1; i++) {
 			length += calcDistance(m_points.get(i), m_points.get(i + 1));
 		}
 		return length;
 	}
 
-	std::string print() override {
+	std::string print() const override {
 		std::stringstream description;
 		description << Named::print() << "\n";
-		for (int i = 0; i < m_points.size(); i++) {
+		for (uint32_t i = 0; i < m_points.size(); i++) {
 			description << m_points.get(i).print();
 		}
 		description << "Length = " << calcLength() << "\n";
@@ -242,20 +242,20 @@ public:
 		m_points.clear();
 	}
 
-	double calcPerimetr() {
+	double calcPerimetr() const {
 		double length = 0;
-		for (int i = 0; i < m_points.size() - 1; i++) {
+		for (uint32_t i = 0; i < m_points.size() - 1; i++) {
 			length += calcDistance(m_points.get(i), m_points.get(i + 1));
 		}
 		length += calcDistance(m_points.get(0), m_points.get(m_points.size()-1));
 		return length;
 	}
 
-	std::string print() override {
+	std::string print() const override {
 		std::stringstream description;
 		description << Named::print() << "\n";
 
-		for (int i = 0; i < m_points.size(); i++) {
+		for (uint32_t i = 0; i < m_points.size(); i++) {
 			description << m_points.get(i).print();
 		}
 

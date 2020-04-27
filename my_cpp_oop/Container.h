@@ -1,10 +1,6 @@
 #pragma once
 #include <memory>
 
-#include <cstdint>
-
-#include <stdexcept>
-
 template <class T> 
 class Container {
 
@@ -14,11 +10,11 @@ public:
 	Container(const Container<T> & anotherContainer);
 	~Container();
 
-	void add(T const& value);
+	void add(T const & value);
 
 	T& get(uint32_t index) const;
 
-	void pop();
+	void remove();
 
 	void clear();
 
@@ -38,7 +34,6 @@ private:
 	uint32_t m_size;
 	uint32_t m_capacity;
 	char* m_buffer;
-	uint32_t * byd;
 	void resize();
 };
 
@@ -59,8 +54,8 @@ Container<T>::Container(uint32_t capacity) :
 template<class T>
 Container<T>::Container(const Container<T> & anotherContainer) :
 	m_size(anotherContainer.m_size),
-	m_capacity(anotherContainer.m_capacity) {
-	m_buffer = new char[sizeof(T) * m_capacity];
+	m_capacity(anotherContainer.m_capacity),
+	m_buffer(new char[sizeof(T) * m_capacity]) {
 	for (uint32_t i = 0; i < anotherContainer.m_size; ++i) {
 		new(m_buffer + i * sizeof(T)) T(anotherContainer.get(i));
 	}
@@ -68,6 +63,7 @@ Container<T>::Container(const Container<T> & anotherContainer) :
 
 template<class T>
 Container<T>::~Container() {
+	clear();
 	m_size = 0;
 	m_capacity = 0;
 	delete m_buffer;
@@ -91,8 +87,8 @@ T& Container<T>::get(uint32_t index) const {
 }
 
 template<class T>
-void Container<T>::pop() {
-	this->get(m_size - 1).~T();
+void Container<T>::remove() {
+	get(m_size-1).~T();
 	--m_size;
 }
 
@@ -100,7 +96,7 @@ template<class T>
 void Container<T>::clear() {
 	int count = m_size;
 	for (int i = 0; i < count; i++) {
-		pop();
+		remove();
 	}
 	m_size = 0;
 }

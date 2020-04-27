@@ -7,7 +7,7 @@
 class ShapeFactory {
 public:
 	Shape * createRandomShape() {
-		switch (randomInt(1, 5)) {
+		switch (randomInt(1, 6)) {
 			case 1: 
 				return createPoint();
 			case 2:
@@ -20,6 +20,8 @@ public:
 				return createPolyline();
 			case 6:
 				return createPolygon();
+			default:
+				throw "Wrong shape nums";
 		}
 	}
 	Point * createPoint() {
@@ -42,30 +44,30 @@ public:
 
 	Square * createSquare() {
 		Point * pointA = createPoint();
-		double side = randomDouble(0, 10);
+		double side = randomDouble(1, 10);
 		Point * pointB = new Point(pointA->getX() + side, pointA->getY() + side);
-
 		Rectangle * rect = new Rectangle(*pointA, *pointB);
 
 		return new Square(*rect);
 	}
 
 	Polyline * createPolyline() {
-		Container<Point> points = Container<Point>();
-		int pointsNum = randomInt(0, 10);
-		for (int i = 0; i < 5; i++) {
+		int pointsNum = randomInt(MIN_POINTS_NUM, MAX_POINTS_NUM);
+		Container<Point> points = Container<Point>(pointsNum);
+		Polyline * polyline = new Polyline(points);
+		for (int i = 0; i < pointsNum; i++) {
 			Point * point = createPoint();
-			points.add(*point);
+			polyline->addPoint(*point);
 			delete point;
 		}
-		Polyline * polyline = new Polyline(points);
+		
 		points.clear();
 		return polyline;
 	}
 
 	Polygon * createPolygon() {
 		Container<Point> points = Container<Point>();
-		int pointsNum = randomInt(0, 10);
+		int pointsNum = randomInt(MIN_POINTS_NUM, MAX_POINTS_NUM);
 		for (int i = 0; i < pointsNum; i++) {
 			Point * point = createPoint();
 			points.add(*point);
@@ -86,5 +88,7 @@ private:
 	}
 
 	static const uint32_t SHAPE_TYPES_NUM = 6;
-
+	static const uint32_t MIN_POINTS_NUM = 1;
+	static const uint32_t MAX_POINTS_NUM = 10;
+	
 };
