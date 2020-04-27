@@ -1,4 +1,9 @@
 #pragma once
+#include <memory>
+
+#include <cstdint>
+
+#include <stdexcept>
 
 template <class T> 
 class Container {
@@ -11,9 +16,9 @@ public:
 
 	void add(T const& value);
 
-	T& get(uint32_t index);
+	T& get(uint32_t index) const;
 
-	T& pop();
+	void pop();
 
 	void clear();
 
@@ -32,33 +37,32 @@ public:
 private:
 	uint32_t m_size;
 	uint32_t m_capacity;
-
-	T* m_elements;
-
+	char* m_buffer;
+	uint32_t * byd;
 	void resize();
 };
 
 template<class T>
 Container<T>::Container() {
 	m_size = 0;
-	m_capacity = m_size*2;
-	m_elements = nullptr;
+	m_capacity = 0;
+	m_buffer = nullptr;
 }
 
 template<class T>
-Container<T>::Container(uint32_t capacity) {
-	m_size = 0;
-	m_capacity = capacity;
-	m_elements = new T[capacity]();
+Container<T>::Container(uint32_t capacity) :
+	m_size(0),
+	m_capacity(capacity) {
+		m_buffer = new char[sizeof(T) * capacity];
 }
 
 template<class T>
-Container<T>::Container(const Container<T> & anotherContainer):
+Container<T>::Container(const Container<T> & anotherContainer) :
 	m_size(anotherContainer.m_size),
-	m_capacity(anotherContainer.m_capacity),
-	m_elements(new T[m_capacity]) {
-	for (uint32_t i = 0; i < m_size; i++) {
-		m_elements[i] = anotherContainer.m_elements[i];
+	m_capacity(anotherContainer.m_capacity) {
+	m_buffer = new char[sizeof(T) * m_capacity];
+	for (uint32_t i = 0; i < anotherContainer.m_size; ++i) {
+		new(m_buffer + i * sizeof(T)) T(anotherContainer.get(i));
 	}
 }
 
@@ -66,32 +70,30 @@ template<class T>
 Container<T>::~Container() {
 	m_size = 0;
 	m_capacity = 0;
-	delete m_elements;
+	delete m_buffer;
 }
 
 template<class T>
 void Container<T>::add(T const & value) {
-	if (m_size > m_capacity) {
+	if (m_size >= m_capacity) {
 		resize();
-	}
-	m_elements[m_size] = value;
+	}	
+	new(m_buffer + m_size * sizeof(T)) T(value);
 	++m_size;
 }
 
 template<class T>
-T& Container<T>::get(uint32_t index) {
+T& Container<T>::get(uint32_t index) const {
 	if (index >= m_size) {
-		throw exception("wrong index");
+		throw "wrong index";
 	}
-	return m_elements[index];
+	return (T&) m_buffer[index * sizeof(T)];
 }
 
 template<class T>
-T & Container<T>::pop() {
-	T result = m_elements[--m_size];
-	delete m_elements[m_size];
-	//m_elements[m_size] = NULL;
-	return result;
+void Container<T>::pop() {
+	this->get(m_size - 1).~T();
+	--m_size;
 }
 
 template<class T>
@@ -105,10 +107,11 @@ void Container<T>::clear() {
 
 template<class T>
 void Container<T>::resize() {
-	m_capacity = m_capacity * 2;
-	T* increasedArray = new T[m_capacity];
-	for (uint32_t i = 0; i < m_size; i++) {
-		increasedArray[i] = m_elements[i];
+	m_capacity = m_capacity * 2 + 1;
+	char * increasedBuffer = new char[sizeof(T) * m_capacity];
+	for (uint32_t i = 0; i < sizeof(T) * m_size; i++) {
+		increasedBuffer[i] = m_buffer[i];
 	}
-	m_elements = increasedArray;
+	delete m_buffer;
+	m_buffer = increasedBuffer;
 }

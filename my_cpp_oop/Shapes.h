@@ -8,6 +8,7 @@
 #include "Container.h"
 #include <sstream>
 
+static double const eps = 0.001;
 
 class Shape : public Printable {
 public:
@@ -35,6 +36,7 @@ int Shape::sm_count = 0;
 
 class Point : public Shape, public Named {
 public:
+	
 	Point(double x, double y): 
 		Named("Point"),
 		m_x(x),
@@ -44,7 +46,7 @@ public:
 		Named(name),
 		m_x(x),
 		m_y(y) {}
-
+		
 	double getX() const {
 		return m_x;
 	}
@@ -175,7 +177,7 @@ private:
 	bool isSquareExist() {
 		Point pointA = m_squareRect->getPointA();
 		Point pointB = m_squareRect->getPointB();
-		return (pointA.getX() - pointB.getX() == pointA.getY() - pointB.getY());
+		return (abs(abs(pointA.getX() - pointB.getX()) - abs(pointA.getY() - pointB.getY())) < eps);
 	}
 };
 
@@ -184,28 +186,68 @@ double calcDistance(Point const & pointA, Point const & pointB) {
 		(pointA.getY() - pointB.getY()) * (pointA.getY() - pointB.getY()));
 }
 
+
 class Polyline : public Shape, public Named {
+
 public:
-	Polyline(std::string name, Container<Point*> const & points) :
+
+	Polyline(std::string name, Container<Point> const & points) :
 		Named(name),
 		m_points(points) {}
 
-	Polyline(Container<Point*> & points) :
+	Polyline(Container<Point> & points) :
 		Polyline("Polyline", points) {}
 
 	~Polyline() {
 		m_points.clear();
 	}
 
-	void addPoint(Point point) {
-		m_points.add(&point);
+	void addPoint(Point const & point) {
+		m_points.add(point);
 	}
 
 	double calcLength() {
 		double length = 0;
 		for (int i = 0; i < m_points.size() - 1; i++) {
-			length += calcDistance(*m_points.get(i), *m_points.get(i + 1));
+			length += calcDistance(m_points.get(i), m_points.get(i + 1));
 		}
+		return length;
+	}
+
+	std::string print() override {
+		std::stringstream description;
+		description << Named::print() << "\n";
+		for (int i = 0; i < m_points.size(); i++) {
+			description << m_points.get(i).print();
+		}
+		description << "Length = " << calcLength() << "\n";
+		return description.str();
+	}
+
+private:
+	Container<Point> m_points;
+};
+
+class Polygon : public Shape, public Named {
+public:
+	Polygon(std::string name, Container<Point> const & points) :
+		Named(name),
+		m_points(points) {
+	}
+
+	Polygon(Container<Point> const & points):
+		Polygon("Polygon", points) {}
+
+	~Polygon() {
+		m_points.clear();
+	}
+
+	double calcPerimetr() {
+		double length = 0;
+		for (int i = 0; i < m_points.size() - 1; i++) {
+			length += calcDistance(m_points.get(i), m_points.get(i + 1));
+		}
+		length += calcDistance(m_points.get(0), m_points.get(m_points.size()-1));
 		return length;
 	}
 
@@ -214,18 +256,14 @@ public:
 		description << Named::print() << "\n";
 
 		for (int i = 0; i < m_points.size(); i++) {
-			description << m_points.get(i)->print();
+			description << m_points.get(i).print();
 		}
 
-		description << "Length = " << calcLength() << "\n";
+		description << "Perimetr = " << calcPerimetr() << "\n";
 
 		return description.str();
 	}
 
 private:
-	Container<Point*> m_points ;
-};
-
-class Polygon : public Shape, public Named {
-
+	Container<Point> m_points;
 };

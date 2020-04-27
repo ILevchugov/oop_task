@@ -117,6 +117,7 @@
   <ItemGroup>
     <ClInclude Include="Base.h" />
     <ClInclude Include="Container.h" />
+    <ClInclude Include="ShapeFactory.h" />
     <ClInclude Include="Shapes.h" />
   </ItemGroup>
   <ItemGroup>
